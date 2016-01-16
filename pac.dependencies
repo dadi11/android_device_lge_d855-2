@@ -6,17 +6,5 @@
   {
     "repository": "android_hardware_qcom_fm",
     "target_path": "hardware/qcom/fm"
-  },
-  {
-    "repository": "android_device_qcom_sepolicy",
-    "target_path": "device/qcom/sepolicy-caf"
-  },
-  {
-    "repository": "android_vendor_qcom_opensource_dataservices",
-    "target_path": "vendor/qcom/opensource/dataservices"
-  },
-  {
-    "repository":   "android_vendor_qcom_opensource_display-frameworks",
-    "target_path":  "vendor/qcom/opensource/display-frameworks"
   }
 ]
