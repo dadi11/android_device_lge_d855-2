@@ -83,5 +83,9 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     GloveMode
 
+# Boot Cleaner
+PRODUCT_COPY_FILES += \
+    device/lge/d855/prebuilt/etc/init.d/81clean:system/etc/init.d/81clean
+
 # Common G3
 $(call inherit-product, device/lge/g3-common/g3.mk)
