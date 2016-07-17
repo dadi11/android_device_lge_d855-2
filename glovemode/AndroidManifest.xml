@@ -16,7 +16,7 @@
 
     <application
         android:allowBackup="true"
-        android:label="DeviceSettings"
+        android:label="GloveMode"
         android:persistent="true"
         android:theme="@android:style/Theme.Material.Settings">
 

@@ -81,7 +81,7 @@ PRODUCT_COPY_FILES += \
 
 # Glove mode
 PRODUCT_PACKAGES += \
-    DeviceSettings
+    GloveMode
 
 # Common G3
 $(call inherit-product, device/lge/g3-common/g3.mk)
