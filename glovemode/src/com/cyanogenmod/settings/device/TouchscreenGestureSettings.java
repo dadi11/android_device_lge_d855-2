@@ -24,6 +24,10 @@ import android.preference.SwitchPreference;
 import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+
+import static android.provider.Settings.Secure.DOUBLE_TAP_TO_WAKE;
 
 public class TouchscreenGestureSettings extends PreferenceActivity {
 
@@ -32,13 +36,19 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
     private static final String KEY_GESTURE_PICK_UP = "gesture_pick_up";
     private static final String KEY_GESTURE_POCKET = "gesture_pocket";
     private static final String KEY_PROXIMITY_WAKE = "proximity_wake_enable";
-
+    private static final String KEY_TAP_TO_WAKE = "tap_to_wake";
+	
+    private static final String RESOURCE_PACKAGE = "com.android.settings";
+    private static final String RESOURCE_KEY_DT_TITLE = "double_tap_to_wake_title";
+    private static final String RESOURCE_KEY_DT_SUMMARY = "double_tap_to_wake_summary";
+	
     private SwitchPreference mAmbientDisplayPreference;
     private SwitchPreference mHandwavePreference;
     private SwitchPreference mPickupPreference;
     private SwitchPreference mPocketPreference;
     private SwitchPreference mProximityWakePreference;
-
+    private SwitchPreference mTapToWakePreference;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,11 +66,32 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
         mPocketPreference.setEnabled(dozeEnabled);
         mProximityWakePreference = (SwitchPreference) findPreference(KEY_PROXIMITY_WAKE);
         mProximityWakePreference.setOnPreferenceChangeListener(mGesturePrefListener);
-
+        mTapToWakePreference = (SwitchPreference) findPreference(KEY_TAP_TO_WAKE);
+        mTapToWakePreference.setOnPreferenceChangeListener(this);
+        mTapToWakePreference.setTitle(getString(RESOURCE_PACKAGE, RESOURCE_KEY_DT_TITLE, "fail"));
+        mTapToWakePreference.setSummary(getString(RESOURCE_PACKAGE, RESOURCE_KEY_DT_SUMMARY, "fail"));
         final ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
+    private void updateState() {
+        // Update tap to wake if it is available.
+        if (mTapToWakePreference != null) {
+            int value = Settings.Secure.getInt(getContentResolver(), DOUBLE_TAP_TO_WAKE, 0);
+            mTapToWakePreference.setChecked(value != 0);
+        }
+    }
+	
+	@Override
+    public boolean onPreferenceChange(Preference preference, Object objValue) {
+        final String key = preference.getKey();
+        if (preference == mTapToWakePreference) {
+            boolean value = (Boolean) objValue;
+            Settings.Secure.putInt(getContentResolver(), DOUBLE_TAP_TO_WAKE, value ? 1 : 0);
+        }
+        return true;
+    }
+	
     @Override
     protected void onResume() {
         super.onResume();
@@ -115,6 +146,27 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
             }
             return true;
         }
-    };
 
+    };
+    // try to get the resource if not fail and return the def value
+    private String getString(String packageName, String resourceKey, String defValue){
+        try
+        {
+            // get package manager
+            PackageManager manager = getPackageManager();
+            // get resources
+            Resources resources = manager.getResourcesForApplication(packageName);
+            // find the id#
+            int resId = resources.getIdentifier(resourceKey, "string", packageName);
+            // return the string
+            return resources.getString(resId);
+        }
+        catch (Exception e)
+        {
+            // epic failure... return the default value 
+            return defValue;
+            // print the error for good measure.
+            e.printStackTrace();
+        }
+    }
 }
